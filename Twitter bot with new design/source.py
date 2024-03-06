@@ -48,7 +48,8 @@ def sources_window():
         bd=0,
         highlightthickness=0,
         command=lambda: button_click(button_1),
-        relief="flat"
+        relief="flat",
+        cursor="hand2"
     )
     button_1.place(
         x=12.0,
@@ -65,7 +66,8 @@ def sources_window():
         bd=0,
         highlightthickness=0,
         command=lambda: button_click(button_2),
-        relief="flat"
+        relief="flat",
+        cursor="hand2"
     )
     button_2.place(
         x=12.0,
@@ -82,7 +84,8 @@ def sources_window():
         bd=0,
         highlightthickness=0,
         command=lambda: button_click(button_3),
-        relief="flat"
+        relief="flat",
+        cursor="hand2"
     )
     button_3.place(
         x=12.0,
@@ -101,7 +104,8 @@ def sources_window():
         bd=0,
         highlightthickness=0,
         command=lambda: window.destroy(),
-        relief="flat"
+        relief="flat",
+        cursor="hand2"
     )
     button_4.place(
         x=12.0,
@@ -182,7 +186,8 @@ def sources_window():
         bd=0,
         highlightthickness=0,
         command=lambda: print("Delete Button clicked"),
-        relief="flat"
+        relief="flat",
+        cursor="hand2"
     )
     button_5.place(
         x=808.0,
@@ -199,7 +204,8 @@ def sources_window():
         bd=0,
         highlightthickness=0,
         command=lambda: print("Update Button clicked"),
-        relief="flat"
+        relief="flat",
+        cursor="hand2"
     )
     button_6.place(
         x=650.0,
@@ -216,7 +222,8 @@ def sources_window():
         bd=0,
         highlightthickness=0,
         command=lambda: print("Parse Button clicked"),
-        relief="flat"
+        relief="flat",
+        cursor="hand2"
     )
     button_7.place(
         x=492.0,
@@ -258,4 +265,4 @@ def sources_window():
 
     window.mainloop()
 
-# sources_window()
+sources_window()
