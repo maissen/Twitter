@@ -1,10 +1,17 @@
 from tkinter import Tk, Canvas, Entry, Button, PhotoImage
 
 def sources_window():
+    def button_click(button):
+        # Change background color of all buttons to initial color
+        for btn in buttons:
+            btn.config(bg="#222222")
+        # Change background color of the clicked button to a little brighter
+        button.config(bg="#444")
+
     window = Tk()
 
     window.geometry("1250x670")
-    window.configure(bg="#FFFFFF")
+    window.configure(bg="#000")
 
     canvas = Canvas(
         window,
@@ -30,17 +37,17 @@ def sources_window():
         0.0,
         174.0,
         670.0,
-        fill="#222222",
+        fill="#000",
         outline="")
 
     button_1 = Button(
         window,
-        text="Button 1",
+        text="Sources",
         bg="#222222",
         fg="#FFFFFF",
         bd=0,
         highlightthickness=0,
-        command=lambda: print("Button 1 clicked"),
+        command=lambda: button_click(button_1),
         relief="flat"
     )
     button_1.place(
@@ -52,12 +59,12 @@ def sources_window():
 
     button_2 = Button(
         window,
-        text="Button 2",
+        text="Feed",
         bg="#222222",
         fg="#FFFFFF",
         bd=0,
         highlightthickness=0,
-        command=lambda: print("Button 2 clicked"),
+        command=lambda: button_click(button_2),
         relief="flat"
     )
     button_2.place(
@@ -69,12 +76,12 @@ def sources_window():
 
     button_3 = Button(
         window,
-        text="Button 3",
+        text="Queue",
         bg="#222222",
         fg="#FFFFFF",
         bd=0,
         highlightthickness=0,
-        command=lambda: print("Button 3 clicked"),
+        command=lambda: button_click(button_3),
         relief="flat"
     )
     button_3.place(
@@ -84,14 +91,16 @@ def sources_window():
         height=36.0
     )
 
+    buttons = [button_1, button_2, button_3]
+
     button_4 = Button(
         window,
-        text="Button 4",
+        text="Exit",
         bg="#222222",
         fg="#FFFFFF",
         bd=0,
         highlightthickness=0,
-        command=lambda: print("Button 4 clicked"),
+        command=lambda: window.destroy(),
         relief="flat"
     )
     button_4.place(
@@ -102,13 +111,14 @@ def sources_window():
     )
 
     # Add more buttons similarly...
-
+    
+    #local frame to hide/display
     canvas.create_rectangle(
         186.0,
         14.0,
         1239.0,
         659.0,
-        fill="#D9D9D9",
+        fill="green",
         outline="")
 
     canvas.create_text(
@@ -166,12 +176,12 @@ def sources_window():
 
     button_5 = Button(
         window,
-        text="Button 5",
+        text="Delete",
         bg="#222222",
         fg="#FFFFFF",
         bd=0,
         highlightthickness=0,
-        command=lambda: print("Button 5 clicked"),
+        command=lambda: print("Delete Button clicked"),
         relief="flat"
     )
     button_5.place(
@@ -183,12 +193,12 @@ def sources_window():
 
     button_6 = Button(
         window,
-        text="Button 6",
+        text="Update",
         bg="#222222",
         fg="#FFFFFF",
         bd=0,
         highlightthickness=0,
-        command=lambda: print("Button 6 clicked"),
+        command=lambda: print("Update Button clicked"),
         relief="flat"
     )
     button_6.place(
@@ -200,12 +210,12 @@ def sources_window():
 
     button_7 = Button(
         window,
-        text="Button 7",
+        text="Parse",
         bg="#222222",
         fg="#FFFFFF",
         bd=0,
         highlightthickness=0,
-        command=lambda: print("Button 7 clicked"),
+        command=lambda: print("Parse Button clicked"),
         relief="flat"
     )
     button_7.place(
@@ -242,6 +252,10 @@ def sources_window():
     )
 
     window.resizable(False, False)
+
+    # Automatically click the "Sources" button
+    button_1.invoke()
+
     window.mainloop()
 
-
+# sources_window()
