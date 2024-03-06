@@ -1,4 +1,5 @@
 from tkinter import Tk, Canvas, Entry, Button, PhotoImage
+from tkinter.ttk import Combobox
 
 def sources_window():
     def button_click(button):
@@ -39,73 +40,76 @@ def sources_window():
         1250.0,
         670.0,
         fill="#D7D9E5",
-        outline="")
+        outline=""
+    )
 
+    #navbar 
     canvas.create_rectangle(
         0.0,
         0.0,
         174.0,
         670.0,
         fill="#000",
-        outline="")
+        outline=""
+    )
 
-    button_1 = Button(
+    sources_btn = Button(
         window,
         text="Sources",
         bg="#222222",
         fg="#FFFFFF",
         bd=0,
         highlightthickness=0,
-        command=lambda: button_click(button_1),
+        command=lambda: button_click(sources_btn),
         relief="flat",
         cursor="hand2"
     )
-    button_1.place(
+    sources_btn.place(
         x=12.0,
         y=14.0,
         width=151.0,
         height=36.0
     )
 
-    button_2 = Button(
+    feed_btn = Button(
         window,
         text="Feed",
         bg="#222222",
         fg="#FFFFFF",
         bd=0,
         highlightthickness=0,
-        command=lambda: button_click(button_2),
+        command=lambda: button_click(feed_btn),
         relief="flat",
         cursor="hand2"
     )
-    button_2.place(
+    feed_btn.place(
         x=12.0,
         y=75.0,
         width=151.0,
         height=36.0
     )
 
-    button_3 = Button(
+    queue_btn = Button(
         window,
         text="Queue",
         bg="#222222",
         fg="#FFFFFF",
         bd=0,
         highlightthickness=0,
-        command=lambda: button_click(button_3),
+        command=lambda: button_click(queue_btn),
         relief="flat",
         cursor="hand2"
     )
-    button_3.place(
+    queue_btn.place(
         x=12.0,
         y=136.0,
         width=151.0,
         height=36.0
     )
 
-    buttons = [button_1, button_2, button_3]
+    buttons = [sources_btn, feed_btn, queue_btn]
 
-    button_4 = Button(
+    exit_btn = Button(
         window,
         text="Exit",
         bg="#222222",
@@ -116,7 +120,7 @@ def sources_window():
         relief="flat",
         cursor="hand2"
     )
-    button_4.place(
+    exit_btn.place(
         x=12.0,
         y=623.0,
         width=151.0,
@@ -132,7 +136,8 @@ def sources_window():
         1239.0,
         659.0,
         fill="green",
-        outline="")
+        outline=""
+    )
 
     canvas.create_text(
         492.0,
@@ -152,26 +157,26 @@ def sources_window():
         font=("Inter", 15 * -1)
     )
 
-    entry_1 = Entry(
+    link_entry = Entry(
         bd=0,
         bg="#BEBEBE",
         fg="#000716",
         highlightthickness=0
     )
-    entry_1.place(
+    link_entry.place(
         x=492.0,
         y=157.0,
         width=439.0,
         height=33.0
     )
 
-    entry_2 = Entry(
+    title_entry = Entry(
         bd=0,
         bg="#BEBEBE",
         fg="#000716",
         highlightthickness=0
     )
-    entry_2.place(
+    title_entry.place(
         x=492.0,
         y=265.0,
         width=439.0,
@@ -187,7 +192,19 @@ def sources_window():
         font=("Inter", 24 * -1)
     )
 
-    button_5 = Button(
+    combobox = Combobox(
+        window,
+        values=["Option 1", "Option 2", "Option 3"],
+        state="readonly"
+    )
+    combobox.place(
+        x=492.0,
+        y=430.0,
+        width=446.0,
+        height=39.0
+    )
+
+    delete_btn = Button(
         window,
         text="Delete",
         bg="#222222",
@@ -198,14 +215,14 @@ def sources_window():
         relief="flat",
         cursor="hand2"
     )
-    button_5.place(
+    delete_btn.place(
         x=808.0,
         y=507.0,
         width=130.0,
         height=36.0
     )
 
-    button_6 = Button(
+    update_btn = Button(
         window,
         text="Update",
         bg="#222222",
@@ -216,14 +233,14 @@ def sources_window():
         relief="flat",
         cursor="hand2"
     )
-    button_6.place(
+    update_btn.place(
         x=650.0,
         y=507.0,
         width=130.0,
         height=36.0
     )
 
-    button_7 = Button(
+    parse_btn = Button(
         window,
         text="Parse",
         bg="#222222",
@@ -234,20 +251,12 @@ def sources_window():
         relief="flat",
         cursor="hand2"
     )
-    button_7.place(
+    parse_btn.place(
         x=492.0,
         y=507.0,
         width=130.0,
         height=36.0
     )
-
-    canvas.create_rectangle(
-        492.0,
-        430.0,
-        938.0,
-        469.0,
-        fill="#BEBEBE",
-        outline="")
 
     canvas.create_text(
         492.0,
@@ -270,7 +279,7 @@ def sources_window():
     window.resizable(False, False)
 
     # Automatically click the "Sources" button
-    button_1.invoke()
+    sources_btn.invoke()
 
     window.mainloop()
 
