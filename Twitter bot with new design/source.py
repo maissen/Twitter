@@ -10,7 +10,16 @@ def sources_window():
 
     window = Tk()
 
-    window.geometry("1250x670")
+    window_width = 1250
+    window_height = 670
+
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+
+    x_coordinate = (screen_width - window_width) // 2
+    y_coordinate = (screen_height - window_height) // 2
+
+    window.geometry(f"{window_width}x{window_height}+{x_coordinate}+{y_coordinate}")
     window.configure(bg="#000")
 
     canvas = Canvas(
