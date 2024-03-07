@@ -70,7 +70,7 @@ def main_loader():
     # Bind mouse events for dragging
     window.bind("<B1-Motion>", on_drag)
     window.bind("<Button-1>", start_drag)
-    window.after(1000, lambda: (window.destroy(), sources_window()))
+    window.after(1000, lambda: (window.destroy(), load_main_window()))
 
     window.resizable(False, False)
     window.mainloop()
