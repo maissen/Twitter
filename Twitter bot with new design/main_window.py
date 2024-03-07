@@ -1,591 +1,37 @@
 from tkinter import Tk, Canvas, Entry, Button, Text, Scrollbar, Frame, Label
 from tkinter.ttk import Combobox
 import tkinter as tk
+from PIL import Image, ImageTk
+import pickle
+import webbrowser
+from my_functions import *
 
-canvas = None  # Define canvas as a global variable
 
-# def load_sources_frame():
-    
-#     container = Tk.Canvas(window, bg="green", width=1239, height=659, highlightthickness=0, bd=0)
-#     container.place(x=186.0, y=14.0)
+def popup_message(title, message):
+    # Create the popup window
+    popup = tk.Toplevel()
+    popup.title(title)
+    popup_width = 300
+    popup_height = 80
 
-#     # Set the z-index of the green rectangle to 1
-#     canvas.tag_lower("all")
+    # Get the screen width and height
+    screen_width = popup.winfo_screenwidth()
+    screen_height = popup.winfo_screenheight()
 
-#     # Create a parent container frame
-#     container = tk.Canvas(window, bg="green", width=1239.0-186.0, height=659.0-14.0, highlightthickness=0, bd=0)
-#     container.place(x=186.0, y=14.0)
+    # Calculate the position of the popup window to center it on the screen
+    x = (screen_width - popup_width) // 2
+    y = (screen_height - popup_height) // 2
 
-#     # Add elements to the parent container
-#     container.create_text(
-#         492.0 - 186.0,
-#         129.0 - 14.0,
-#         anchor="nw",
-#         text="Enter rss Link :",
-#         fill="#000000",
-#         font=("Inter", 15)
-#     )
+    # Set the geometry of the popup window
+    popup.geometry(f"{popup_width}x{popup_height}+{x}+{y}")
 
-#     container.create_text(
-#         492.0 - 186.0,
-#         237.0 - 14.0,
-#         anchor="nw",
-#         text="Enter rss Title :",
-#         fill="#000000",
-#         font=("Inter", 15)
-#     )
+    # Create and pack the label
+    label = ttk.Label(popup, text=message)
+    label.pack(pady=20)
 
-#     link_entry = tk.Entry(
-#         container,
-#         bd=0,
-#         bg="#9597a8",
-#         fg="#000716",
-#         highlightthickness=0
-#     )
-#     link_entry.place(
-#         x=492.0 - 186.0,
-#         y=157.0 - 14.0,
-#         width=439.0,
-#         height=33.0
-#     )
+    # Schedule the closing of the popup after 3500 milliseconds (3.5 seconds)
+    popup.after(3500, popup.destroy)
 
-#     title_entry = tk.Entry(
-#         container,
-#         bd=0,
-#         bg="#BEBEBE",
-#         fg="#000716",
-#         highlightthickness=0
-#     )
-#     title_entry.place(
-#         x=492.0 - 186.0,
-#         y=265.0 - 14.0,
-#         width=439.0,
-#         height=33.0
-#     )
-
-#     container.create_text(
-#         623.0 - 186.0,
-#         46.0 - 14.0,
-#         anchor="nw",
-#         text="Add new source",
-#         fill="#000000",
-#         font=("Inter", 24)
-#     )
-
-#     combobox = Combobox(
-#         container,
-#         values=["Option 1", "Option 2", "Option 3"],
-#         state="readonly"
-#     )
-#     combobox.place(
-#         x=492.0 - 186.0,
-#         y=430.0 - 14.0,
-#         width=446.0,
-#         height=39.0
-#     )
-
-#     delete_btn = tk.Button(
-#         container,
-#         text="Delete",
-#         bg="#222222",
-#         fg="#FFFFFF",
-#         bd=0,
-#         highlightthickness=0,
-#         command=lambda: print("Delete Button clicked"),
-#         relief="flat",
-#         cursor="hand2"
-#     )
-#     delete_btn.place(
-#         x=808.0 - 186.0,
-#         y=507.0 - 14.0,
-#         width=130.0,
-#         height=36.0
-#     )
-
-#     update_btn = tk.Button(
-#         container,
-#         text="Update",
-#         bg="#222222",
-#         fg="#FFFFFF",
-#         bd=0,
-#         highlightthickness=0,
-#         command=lambda: print("Update Button clicked"),
-#         relief="flat",
-#         cursor="hand2"
-#     )
-#     update_btn.place(
-#         x=650.0 - 186.0,
-#         y=507.0 - 14.0,
-#         width=130.0,
-#         height=36.0
-#     )
-
-#     parse_btn = tk.Button(
-#         container,
-#         text="Parse",
-#         bg="#222222",
-#         fg="#FFFFFF",
-#         bd=0,
-#         highlightthickness=0,
-#         command=lambda: print("Parse Button clicked"),
-#         relief="flat",
-#         cursor="hand2"
-#     )
-#     parse_btn.place(
-#         x=492.0 - 186.0,
-#         y=507.0 - 14.0,
-#         width=130.0,
-#         height=36.0
-#     )
-
-#     container.create_text(
-#         492.0 - 186.0,
-#         404.0 - 14.0,
-#         anchor="nw",
-#         text="Saved Sources",
-#         fill="#000000",
-#         font=("Inter", 15)
-#     )
-
-#     container.create_rectangle(
-#         561.0 - 186.0,
-#         92.0 - 14.0,
-#         861.0016784667969 - 186.0,
-#         93.0 - 14.0,
-#         fill="#000000",
-#         outline=""
-#     )
-
-#     container.pack()
-
-
-# def load_feed_frame():
-#     global canvas  # Use the global canvas variable
-#     main_window.create_rectangle(
-#         186.0,
-#         14.0,
-#         1239.0,
-#         659.0,
-#         fill="blue",
-#         outline=""
-#     )
-
-#     main_window.create_text(
-#         492.0,
-#         129.0,
-#         anchor="nw",
-#         text="Enter rss Link 2:",
-#         fill="#000000",
-#         font=("Inter", 15 * -1)
-#     )
-
-#     main_window.create_text(
-#         492.0,
-#         237.0,
-#         anchor="nw",
-#         text="Enter rss Title 2:",
-#         fill="#000000",
-#         font=("Inter", 15 * -1)
-#     )
-
-#     main_window.create_text(
-#         492.0,
-#         337.0,
-#         anchor="nw",
-#         text="Enter Hello Title 2:",
-#         fill="#000000",
-#         font=("Inter", 15 * -1)
-#     )
-
-#     link_entry = Entry(
-#         bd=0,
-#         bg="#BEBEBE",
-#         fg="#000716",
-#         highlightthickness=0
-#     )
-#     link_entry.place(
-#         x=492.0,
-#         y=157.0,
-#         width=439.0,
-#         height=33.0
-#     )
-
-#     title_entry = Entry(
-#         bd=0,
-#         bg="#BEBEBE",
-#         fg="#000716",
-#         highlightthickness=0
-#     )
-#     title_entry.place(
-#         x=492.0,
-#         y=265.0,
-#         width=439.0,
-#         height=33.0
-#     )
-
-#     main_window.create_text(
-#         623.0,
-#         46.0,
-#         anchor="nw",
-#         text="Your Feed",
-#         fill="#000000",
-#         font=("Inter", 24 * -1)
-#     )
-
-#     combobox = Combobox(
-#         values=["Option 1", "Option 2", "Option 3"],
-#         state="readonly"
-#     )
-#     combobox.place(
-#         x=492.0,
-#         y=430.0,
-#         width=446.0,
-#         height=39.0
-#     )
-
-#     delete_btn = Button(
-#         text="Delete",
-#         bg="#222222",
-#         fg="#FFFFFF",
-#         bd=0,
-#         highlightthickness=0,
-#         command=lambda: print("Delete Button clicked"),
-#         relief="flat",
-#         cursor="hand2"
-#     )
-#     delete_btn.place(
-#         x=808.0,
-#         y=507.0,
-#         width=130.0,
-#         height=36.0
-#     )
-
-#     update_btn = Button(
-#         text="Update",
-#         bg="#222222",
-#         fg="#FFFFFF",
-#         bd=0,
-#         highlightthickness=0,
-#         command=lambda: print("Update Button clicked"),
-#         relief="flat",
-#         cursor="hand2"
-#     )
-#     update_btn.place(
-#         x=650.0,
-#         y=507.0,
-#         width=130.0,
-#         height=36.0
-#     )
-
-#     parse_btn = Button(
-#         text="Parse",
-#         bg="#222222",
-#         fg="#FFFFFF",
-#         bd=0,
-#         highlightthickness=0,
-#         command=lambda: print("Parse Button clicked"),
-#         relief="flat",
-#         cursor="hand2"
-#     )
-#     parse_btn.place(
-#         x=492.0,
-#         y=507.0,
-#         width=130.0,
-#         height=36.0
-#     )
-
-#     main_window.create_text(
-#         492.0,
-#         404.0,
-#         anchor="nw",
-#         text="Saved Sources 2",
-#         fill="#000000",
-#         font=("Inter", 15 * -1)
-#     )
-
-#     main_window.create_rectangle(
-#         561.0,
-#         92.0,
-#         861.0016784667969,
-#         93.0,
-#         fill="#000000",
-#         outline=""
-#     )
-
-# def load_queue_frame():
-#     global canvas  # Use the global canvas variable
-#     canvas.create_rectangle(
-#         186.0,
-#         14.0,
-#         1239.0,
-#         659.0,
-#         fill="orange",
-#         outline=""
-#     )
-
-#     ##
-#     ##
-#     ################################
-#     canvas.create_rectangle(
-#         186.0,
-#         14.0,
-#         1239.0,
-#         659.0,
-#         fill="#d9d9d9",
-#         outline="")
-
-#     canvas.create_rectangle(
-#         843.0,
-#         451.0,
-#         1222.0,
-#         552.0,
-#         fill="#9597A8",
-#         outline="")
-
-
-#     search_btn = Button(
-#         window,
-#         text="X",
-#         bg="#222222",
-#         fg="#FFFFFF",
-#         bd=0,
-#         highlightthickness=0,
-#         command=lambda: print("load btn clicked"),
-#         relief="flat",
-#         cursor="hand2"
-#     )
-#     search_btn.place(
-#         x=1183.0,
-#         y=457.0,
-#         width=30.0,
-#         height=30.0
-#     )
-
-
-#     canvas.create_rectangle(
-#         843.0,
-#         338.0,
-#         1222.0,
-#         439.0,
-#         fill="#9597A8",
-#         outline="")
-
-#     canvas.create_rectangle(
-#         843.0,
-#         223.0,
-#         1222.0,
-#         324.0,
-#         fill="#9597A8",
-#         outline="")
-
-#     entry_title = Text(
-#         bd=0,
-#         bg="#9597A8",
-#         fg="#000716",
-#         highlightthickness=0
-#     )
-#     entry_title.place(
-#         x=857.0,
-#         y=250.0,
-#         width=356.0,
-#         height=67.0
-#     )
-
-#     entry_description = Text(
-#         bd=0,
-#         bg="#9597A8",
-#         fg="#000716",
-#         highlightthickness=0
-#     )
-#     entry_description.place(
-#         x=857.0,
-#         y=366.0,
-#         width=356.0,
-#         height=67.0
-#     )
-
-#     hashtags_entry = Text(
-#         bd=0,
-#         bg="#9597A8",
-#         fg="#000716",
-#         highlightthickness=0
-#     )
-#     hashtags_entry.place(
-#         x=857.0,
-#         y=494.0,
-#         width=356.0,
-#         height=49.0  # Adjusted height for two rows
-#     )
-
-
-#     canvas.create_text(
-#         857.0,
-#         227.0,
-#         anchor="nw",
-#         text="Entry’s Title :",
-#         fill="#000000",
-#         font=("Inter", 15 * -1)
-#     )
-
-#     canvas.create_text(
-#         857.0,
-#         343.0,
-#         anchor="nw",
-#         text="Entry’s Summary :",
-#         fill="#000000",
-#         font=("Inter", 15 * -1)
-#     )
-
-#     canvas.create_text(
-#         857.0,
-#         463.0,
-#         anchor="nw",
-#         text="Recent Hashtags :",
-#         fill="#000000",
-#         font=("Inter", 15 * -1)
-#     )
-
-#     canvas.create_text(
-#         211.0,
-#         29.0,
-#         anchor="nw",
-#         text="From : Example (15 entries)",
-#         fill="#000000",
-#         font=("Inter", 14 * -1)
-#     )
-
-#     canvas.create_text(
-#         211.0,
-#         48.0,
-#         anchor="nw",
-#         text="Feed : Some title here!",
-#         fill="#000000",
-#         font=("Inter", 20 * -1)
-#     )
-
-#     canvas.create_rectangle(
-#         843.0,
-#         37.0,
-#         1222.0,
-#         209.0,
-#         fill="yellow",
-#         outline="")
-
-#     def update_scroll_region(event):
-#         canvas.configure(scrollregion=canvas.bbox("all"))
-
-#     def on_enter(event):
-#         event.widget.config(bg="green")
-
-#     # Function to handle mouse leave event
-#     def on_leave(event):
-#         event.widget.config(bg="#9597a8")
-
-#     def on_double_click(event):
-#         label_text = event.widget.cget("text")
-#         entry_title.delete(1.0, "end")
-#         entry_title.insert("end", label_text)
-
-#     # Create a canvas
-#     canvas = Canvas(window, bg="#D7D9E5", height=538, width=590, bd=0, highlightthickness=0, relief="ridge")
-#     canvas.place(x=211, y=83)
-
-#     # Add vertical scrollbar
-#     scrollbar = Scrollbar(window, orient="vertical")
-#     scrollbar.place(x=810, y=83, height=538)
-
-#     # Configure canvas scrolling
-#     canvas.config(yscrollcommand=scrollbar.set)
-
-#     # Bind scrollbar to canvas
-#     scrollbar.config(command=canvas.yview)
-
-#     # Create a frame to contain the labels
-#     frame = Frame(canvas, bg="orange", width=590)
-#     canvas.create_window((0, 0), window=frame, anchor='nw')
-
-
-#     # Add labels to the frame
-#     for i in range(100):
-#         label = Label(
-#             frame, 
-#             text=f"Label {i+1}", 
-#             bg="#9597a8", 
-#             width=90,  
-#             anchor='w', 
-#             padx=7, 
-#             pady=7, 
-#             cursor='hand2', 
-#             wraplength=590, 
-#             justify='left'
-#         )
-#         label.pack(pady=0, fill='x')
-#         label.bind("<Enter>", on_enter)
-#         label.bind("<Leave>", on_leave)
-#         label.bind("<Double-1>", on_double_click) # for double clicks
-
-#     # Bind the update_scroll_region function to the frame's size change event
-#     frame.bind("<Configure>", update_scroll_region)
-
-#     search_btn = Button(
-#         window,
-#         text="Search",
-#         bg="#222222",
-#         fg="#FFFFFF",
-#         bd=0,
-#         highlightthickness=0,
-#         command=lambda: print("search_btn clicked"),
-#         relief="flat",
-#         cursor="hand2"
-#     )
-#     search_btn.place(
-#         x=843.0,
-#         y=575.0,
-#         width=182.0,
-#         height=46.0
-#     )
-
-#     add_to_queue_btn = Button(
-#         window,
-#         text="Add to Queue",
-#         bg="#222222",
-#         fg="#FFFFFF",
-#         bd=0,
-#         highlightthickness=0,
-#         command=lambda: print("add_to_queue_btn clicked"),
-#         relief="flat",
-#         cursor="hand2"
-#     )
-#     add_to_queue_btn.place(
-#         x=1040.0,
-#         y=575.0,
-#         width=182.0,
-#         height=46.0
-#     )
-
-#     window.resizable(False, False)
-
-#     # Create scrollbars
-#     scrollbar_entry_title = Scrollbar(window, orient="vertical", width=13, troughcolor="#9597A8", bd=0, command=entry_title.yview)
-#     scrollbar_entry_description = Scrollbar(window, orient="vertical", width=13, troughcolor="#9597A8", bd=0, command=entry_description.yview)
-#     scrollbar_hashtags_entry = Scrollbar(window, orient="vertical", width=13, troughcolor="#9597A8", bd=0, command=hashtags_entry.yview)
-
-#     # Set scrollbar to the text areas
-#     entry_title.config(yscrollcommand=scrollbar_entry_title.set)
-#     entry_description.config(yscrollcommand=scrollbar_entry_description.set)
-#     hashtags_entry.config(yscrollcommand=scrollbar_hashtags_entry.set)
-
-#     # Place the scrollbars
-#     scrollbar_entry_title.place(x=1220.0, y=223.0, height=101.0, anchor="nw")
-#     scrollbar_entry_description.place(x=1220.0, y=338.0, height=101.0, anchor="nw")
-#     scrollbar_hashtags_entry.place(x=1220.0, y=451.0, height=101.0, anchor="nw")
-
-#     # Center the arrows horizontally
-#     window.update_idletasks()
-#     arrow_height = scrollbar_entry_title.winfo_reqheight() / 2
-#     scrollbar_entry_title.config(command=entry_title.yview)
-#     scrollbar_entry_description.config(command=entry_description.yview)
-#     scrollbar_hashtags_entry.config(command=hashtags_entry.yview)
 
 def load_main_window():
     window = Tk()
@@ -709,6 +155,118 @@ def load_main_window():
 
     
     ##############################################################################################################################
+    def save_rss(saved_links_from_file, rss_title, rss_link):
+        title = rss_title.get()
+        link = rss_link.get()
+        
+        if title and link:
+            try:
+                with open("My_rss_sources.dat", "rb") as file:
+                    rss_sources = pickle.load(file)
+            except FileNotFoundError:
+                rss_sources = []
+
+            for source in rss_sources:
+                if source["title"] == title:
+                    popup_message("Error", "RSS title already exists!")
+                    return
+                if source["link"] == link:
+                    popup_message("Error", "RSS link already exists!")
+                    return
+
+            rss_sources.append({"title": title, "link": link})
+            with open("My_rss_sources.dat", "wb") as file:
+                pickle.dump(rss_sources, file)
+
+            if "-- There's no RSS saved --" in saved_links_from_file["values"]:
+                saved_links_from_file.delete(saved_links_from_file["values"].index("-- There's no RSS saved --"))
+
+            saved_links_from_file["values"] = [source["title"] for source in rss_sources]
+            saved_links_from_file.set(title)
+
+            rss_title.delete(0, tk.END)
+            rss_link.delete(0, tk.END)
+
+            popup_message("Success", f"{title} saved successfully")
+        else:
+            if not link:
+                popup_message("Error", "Please enter a Link!")
+            elif not title:
+                popup_message("Error", "Please enter a Title!")
+
+
+    def delete_rss(saved_links_from_file):
+        title_to_delete = saved_links_from_file.get()
+        if title_to_delete:
+            try:
+                with open("My_rss_sources.dat", "rb") as file:
+                    rss_sources = pickle.load(file)
+            except FileNotFoundError:
+                rss_sources = []
+
+            updated_sources = [source for source in rss_sources if source["title"] != title_to_delete]
+
+            with open("My_rss_sources.dat", "wb") as file:
+                pickle.dump(updated_sources, file)
+
+            if updated_sources:
+                saved_links_from_file["values"] = [source["title"] for source in updated_sources]
+                saved_links_from_file.set(updated_sources[0]["title"])
+                popup_message("Success", f"{title_to_delete} deleted successfully")
+            else:
+                saved_links_from_file["values"] = []
+                saved_links_from_file.set("-- There's no RSS saved --")
+                popup_message("Warning", "There's no saved RSS to delete")
+        else:
+            popup_message("Error", "No RSS title selected!")
+
+
+    def delete_confirm_window(saved_links_from_file, rss_source):
+        # Create the main window
+        window = tk.Tk()
+        window.title("Delete Confirmation")
+
+        # Set window width and height
+        window_width = 400
+        window_height = 140
+
+        # Calculate the center position of the screen
+        screen_width = window.winfo_screenwidth()
+        screen_height = window.winfo_screenheight()
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+
+        # Set window geometry
+        window.geometry(f"{window_width}x{window_height}+{x}+{y}")
+
+        # Create label
+        label = ttk.Label(window, text=f"Are you sure you want to delete {rss_source}?")
+        label.pack(pady=20)
+
+        # Function to handle delete button click
+        def delete_clicked():
+            delete_rss(saved_links_from_file)
+            window.destroy()
+        
+        def cancel_clicked():
+            window.destroy()
+            
+
+        # Create a frame to hold the buttons aligned to the right
+        button_frame = ttk.Frame(window)
+        button_frame.pack(side="bottom", pady=20)
+
+        # Create the delete button with padding and aligned to the right
+        delete_button = ttk.Button(button_frame, text="Delete", command=delete_clicked)
+        delete_button.pack(side="right", padx=10)
+
+        # Create the cancel button with padding and aligned to the right
+        cancel_button = ttk.Button(button_frame, text="Cancel", command=cancel_clicked)
+        cancel_button.pack(side="right", padx=10)
+
+        # Run the main event loop
+        window.mainloop()
+
     # Sources section
     sources_frame = tk.Canvas(window, bg="#d9d9d9", width=1050, height=644, highlightthickness=0, bd=0)
     sources_frame.place(x=1239.0, y=659.0)
@@ -732,50 +290,32 @@ def load_main_window():
         font=("Inter", 15)
     )
 
-    link_entry = tk.Entry(
+    rss_link = tk.Entry(
         sources_frame,
         bd=0,
         bg="#BEBEBE",
         fg="#000716",
         highlightthickness=0
     )
-    link_entry.place(
+    rss_link.place(
         x=492.0 - 186.0,
         y=157.0 - 14.0,
         width=439.0,
         height=33.0
     )
 
-    title_entry = tk.Entry(
+    rss_title = tk.Entry(
         sources_frame,
         bd=0,
         bg="#BEBEBE",
         fg="#000716",
         highlightthickness=0
     )
-    title_entry.place(
+    rss_title.place(
         x=492.0 - 186.0,
         y=265.0 - 14.0,
         width=439.0,
         height=33.0
-    )
-
-    add_source = tk.Button(
-        sources_frame,
-        text="Add Source",
-        bg="#222222",
-        fg="#FFFFFF",
-        bd=0,
-        highlightthickness=0,
-        relief="flat",
-        cursor="hand2",
-        command=lambda: print("Add source Button clicked"),
-    )
-    add_source.place(
-        x=622,
-        y=305,
-        width=130.0,
-        height=36.0
     )
 
     sources_frame.create_text(
@@ -787,17 +327,18 @@ def load_main_window():
         font=("Inter", 24)
     )
 
-    combobox = Combobox(
+    saved_links_from_file = Combobox(
         sources_frame,
-        values=["Option 1", "Option 2", "Option 3"],
         state="readonly"
     )
-    combobox.place(
+    saved_links_from_file.set("-- There's no RSS saved --")
+    saved_links_from_file.place(
         x=492.0 - 186.0,
         y=430.0 - 14.0,
         width=446.0,
         height=39.0
     )
+    load_saved_sources(saved_links_from_file)
 
     delete_btn = tk.Button(
         sources_frame,
@@ -806,7 +347,7 @@ def load_main_window():
         fg="#FFFFFF",
         bd=0,
         highlightthickness=0,
-        command=lambda: print("Delete Button clicked"),
+        command=lambda: delete_confirm_window(saved_links_from_file, saved_links_from_file.get()),
         relief="flat",
         cursor="hand2"
     )
@@ -869,6 +410,26 @@ def load_main_window():
         93.0 - 14.0,
         fill="#000000",
         outline=""
+    )
+
+    
+
+    add_source = tk.Button(
+        sources_frame,
+        text="Add Source",
+        bg="#222222",
+        fg="#FFFFFF",
+        bd=0,
+        highlightthickness=0,
+        relief="flat",
+        cursor="hand2",
+        command=lambda: save_rss(saved_links_from_file, rss_title, rss_link),
+    )
+    add_source.place(
+        x=622,
+        y=305,
+        width=130.0,
+        height=36.0
     )
 
     ##############################################################################################################################
@@ -1173,7 +734,18 @@ def load_main_window():
     y = 15
     for i in range(3):  # Loop only until the second-to-last rectangle
         post = tk.Canvas(queue_list, bg="#d9d9d9", width=996, height=130)
+        queue_list.crpost = tk.Canvas(queue_list, bg="#d9d9d9", width=996, height=130)
         queue_list.create_window(14, y, anchor="nw", window=post)
+
+        # Load the image
+        image_path = "C:/Users/Maissen Belgacem/Desktop/Twitter Bot/Twitter bot with new design/picture.jpg"
+        image = Image.open(image_path)
+
+        # Resize the image as needed
+        image = image.resize((168, 115))  # Adjust the dimensions as per your requirement
+
+        # Convert the image to Tkinter-compatible format
+        tk_image = ImageTk.PhotoImage(image)
 
         post.create_rectangle(  # entry img
             11.5,
@@ -1184,6 +756,36 @@ def load_main_window():
             outline="#bfbfbf",
             width=1
         )
+
+        # Create the image inside the royal blue rectangle
+        post_img = post.create_image(
+            6 + (180 - 168) / 2,  # Adjust x-coordinate to center the image horizontally
+            5 + (125 - 115) / 2,     # Adjust y-coordinate to center the image vertically
+            anchor=tk.NW,             # Set anchor to top-left corner
+            image=tk_image            # Use the loaded image
+        )
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         # Create Post's title
         label = tk.Label(post, text="Post title", bg=post.cget('bg'))
@@ -1303,7 +905,7 @@ def load_main_window():
 
     window.resizable(False, False)
     # Automatically click the "Sources" button
-    queue_btn.invoke()
+    sources_btn.invoke()
 
     window.mainloop()
 
