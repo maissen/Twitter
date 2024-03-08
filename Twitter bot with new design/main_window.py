@@ -136,20 +136,12 @@ def load_main_window():
     sources_frame.place(x=1239.0, y=659.0)
 
 
-    # load_sources_frame(sources_frame)
-
-    ##############################################################################################################################
-
-
-
     ##############################################################################################################################
     # Feed section
     feed_frame = tk.Canvas(window, bg="#d9d9d9", width=1050, height=644, highlightthickness=0, bd=0)
     feed_frame.place(x=1239.0, y=659.0)
 
-    # load_feed_frame(feed_frame, x, parsed_title, number_of_parsed_entries)
-    
-    
+
     ##############################################################################################################################
     # Add to queue section!
     # Create a frame to contain the posts
@@ -157,8 +149,6 @@ def load_main_window():
     # Create the queue_frame
     queue_frame = tk.Frame(window, bg="#d9d9d9", width=1253, height=644, highlightthickness=0, bd=0)
     queue_frame.place(x=1239.0, y=659.0)
-
-    # load_queue_frame(queue_frame)
 
     
     ##############################################################################################################################
@@ -170,7 +160,6 @@ def load_main_window():
         button.config(bg="#444")
 
         if button == sources_btn:
-            destroy_frame_child_elements(sources_frame)
             load_sources_frame(sources_frame, feed_btn)
         
             sources_frame.place_configure(x=186.0, y=14.0)
@@ -178,7 +167,6 @@ def load_main_window():
             queue_frame.place_configure(x=1000.0, y=1000.0)
 
         elif button == feed_btn:
-            destroy_frame_child_elements(feed_frame)
             load_feed_frame(feed_frame, feed_btn)
         
             feed_frame.place_configure(x=186.0, y=14.0)
@@ -186,7 +174,6 @@ def load_main_window():
             queue_frame.place_configure(x=1000.0, y=1000.0)
         
         elif button == queue_btn:
-            destroy_frame_child_elements(queue_frame)
             load_queue_frame(queue_frame)
         
             feed_frame.place_configure(x=1000.0, y=1000.0)

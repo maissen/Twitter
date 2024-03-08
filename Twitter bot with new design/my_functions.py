@@ -41,6 +41,21 @@ def load_variables():
     return data
 
 
+def load_hashtags_function(entry):
+    try:
+        all_hashtags = ''
+        with open("Hashtags.txt", "r") as file:
+            for line in file:
+                all_hashtags += line.strip() + " "
+                
+            entry.delete('1.0', 'end')
+            entry.insert("1.0", f"{all_hashtags}")
+        return all_hashtags
+    except FileNotFoundError:
+        with open("Hashtags.txt", "w") as file:
+            return ""
+
+
 def load_saved_sources(saved_links_input):
     try:
         with open("My_rss_sources.dat", "rb") as file:
@@ -56,7 +71,7 @@ def load_saved_sources(saved_links_input):
 
 
 def destroy_frame_child_elements(frame):
-    # Get the list of all child widgets of the sources_frame
+    # Get the list of all child widgets of the frame
     children = frame.winfo_children()
 
     # Destroy each child widget
@@ -367,9 +382,6 @@ def update_rss_window(saved_links_from_file):
         popup_message("Error", "No RSS title selected!")
 
 
-# x = {}
-# parsed_title = ''
-# number_of_parsed_entries = 0
 def parse_rss(saved_links_from_file, feed_btn):
     selected_title = saved_links_from_file.get()
     if selected_title:
@@ -390,7 +402,7 @@ def parse_rss(saved_links_from_file, feed_btn):
                         print(f"selected_title = {selected_title} : {number_of_parsed_entries} entries")
                         print("parse rss : ", number_of_parsed_entries, " data updated successfully!")
                         print("File created at:", os.path.abspath("variables.dat"))
-                        # feed_btn.invoke()
+                        feed_btn.invoke()
                         
                     else:
                         popup_message("Error", f"No entries from {selected_title}, you can try later!")
@@ -399,9 +411,9 @@ def parse_rss(saved_links_from_file, feed_btn):
     
 
 def load_sources_frame(sources_frame, feed_btn):
+    destroy_frame_child_elements(sources_frame)
     variables = load_variables()
-    # print('sources frame is loaded successfully!')
-    print("load sources : ", variables['number_of_parsed_entries'])
+
     # Add elements to the parent sources_frame
     sources_frame.create_text(
         492.0 - 186.0,
@@ -565,7 +577,7 @@ def load_sources_frame(sources_frame, feed_btn):
 
 
 def load_queue_frame(queue_frame):
-    print('queue frame is loaded successfully!') 
+    destroy_frame_child_elements(queue_frame)
     # Add text label above the queue_list canvas
     queue_label = tk.Label(queue_frame, text="Your Queue list", bg="#d9d9d9", fg="black", font=("Inter", 16))
     queue_label.pack(pady=10)  # Adjust padding according to your preference
@@ -739,12 +751,11 @@ def load_queue_frame(queue_frame):
 
 
 def load_feed_frame(feed_frame, feed_btn):
+    destroy_frame_child_elements(feed_frame)
     variables = load_variables()
-    # print('feed frame is loaded successfully!')
     x = variables["x"]
     parsed_title = variables['parsed_title']
     number_of_parsed_entries = variables['number_of_parsed_entries']
-    print("feed frame 'data loaded' : ", number_of_parsed_entries)
 
     feed_frame.create_rectangle( #hashtags
     657,
@@ -761,7 +772,7 @@ def load_feed_frame(feed_frame, feed_btn):
         fg="#FFFFFF",
         bd=0,
         highlightthickness=0,
-        command=lambda: print("load btn clicked"),
+        command=lambda: load_hashtags_function(hashtags_entry),
         relief="flat",
         cursor="hand2"
     )
@@ -858,46 +869,53 @@ def load_feed_frame(feed_frame, feed_btn):
         font=("Inter", 15 * -1)
     )
 
-    
-    if (number_of_parsed_entries!=1):
+    if parsed_title:
+        if (number_of_parsed_entries!=1):
+            label = f"From : {parsed_title} ({number_of_parsed_entries} entries)"    
+        else:
+            label = f"From : {parsed_title} ({number_of_parsed_entries} entry)"
+
+        feed_frame.create_rectangle(
+            0,
+            0,
+            500,
+            65,
+            fill="#d9d9d9",
+            outline="",
+            tags="background"
+        )
+
         feed_frame.create_text(
             25,
             15,
             anchor="nw",
-            text=f"From : Example ({number_of_parsed_entries} entries)",
+            text=label,
             fill="#000000",
             font=("Inter", 12 * -1)
         )
-    else:
+
+        try:
+            if x.feed['title'] != None:
+                if len(x.feed.title) <= 40:
+                    feed_title = x.feed.title
+                else:
+                    feed_title = x.feed.title[:40]
+            else:
+                title_label = ttk.Label(left_frame, text=f"", font=("TkDefaultFont", 20))
+                feed_title = f"Feed of {parsed_title}"
+        except:
+            feed_title = ""
+
         feed_frame.create_text(
             25,
             34,
             anchor="nw",
-            text=f"From : Example ({number_of_parsed_entries} entry)",
+            text=feed_title,
             fill="#000000",
-            font=("Inter", 12 * -1)
+            font=("Inter", 20 * -1)
         )
 
-    try:
-        if x.feed['title'] != None:
-            if len(x.feed.title) <= 40:
-                feed_title = x.feed.title
-            else:
-                feed_title = x.feed.title[:40]
-        else:
-            title_label = ttk.Label(left_frame, text=f"", font=("TkDefaultFont", 20))
-            feed_title = f"Feed of {parsed_title}"
-    except:
-        feed_title = ""
-
-    feed_frame.create_text(
-        25,
-        34,
-        anchor="nw",
-        text=feed_title,
-        fill="#000000",
-        font=("Inter", 20 * -1)
-    )
+    
 
     
     feed_frame.create_rectangle( # entry img
@@ -905,21 +923,47 @@ def load_feed_frame(feed_frame, feed_btn):
     23.0,
     657 + 379,
     23 + 172,
-    fill="yellow",
+    fill="#9597a8",
     outline="")
 
 
     def on_enter(event):
-        event.widget.config(bg="royalblue")
+        event.widget.config(bg="#9597a8")
 
     # Function to handle mouse leave event
     def on_leave(event):
         event.widget.config(bg="#d9d9d9")
 
-    def on_double_click(event):
-        label_text = event.widget.cget("text")
+    def on_double_click(event, entry):
+
         entry_title.delete(1.0, "end")
-        entry_title.insert("end", label_text)
+        entry_description.delete(1.0, "end")
+
+        if('title' in entry.keys()):
+            entry_title.delete('1.0', 'end')
+            if('title_detail' in entry.keys() and entry.title_detail.type == 'text/plain' and entry.title_detail.value != entry.title):
+                entry_title.insert('1.0', f"{entry.title}\n\n-- Title-detail: {entry.title_detail.value}")
+            else:
+                entry_title.insert("1.0", f"{entry.title}")
+        else:
+            entry_title.insert("1.0", "This entry doesn't have a title to show!")
+            
+        
+        if('summary' in entry.keys()): 
+            entry_description.delete('1.0', 'end')
+            if('summary_details' in entry.keys() and entry.summary_detail.type == 'text/plain'):
+                entry_description.insert("1.0", f"{entry.summary}\n\n-- Summary-detail: {entry.summary_detail.value}")
+            else:
+                entry_description.insert("1.0", f"{entry.summary}")
+        elif ('description' in entry.keys()): 
+            entry_description.delete('1.0', 'end')
+            if('description_details' in entry.keys() and entry.description_detail.type == 'text/plain'):
+                entry_description.insert("1.0", f"{entry.description}\n\n-- Description-detail: {entry.description_detail.value}")
+            else:
+                entry_description.insert("1.0", f"{entry.description}")
+        else:
+            entry_description.delete('1.0', 'end')
+            entry_description.insert("1.0", "This entry doesn't have a description or summary to show!")
 
 
 
@@ -929,7 +973,7 @@ def load_feed_frame(feed_frame, feed_btn):
 
     # Add vertical scrollbar
     scrollbar = Scrollbar(feed_frame, orient="vertical")
-    scrollbar.place(x=25 + 590, y=69, height=538)
+    scrollbar.place(x=25 + 590 + 10, y=69, height=538)
 
     # Configure entries_frame scrolling
     entries_frame.config(yscrollcommand=scrollbar.set)
@@ -938,13 +982,13 @@ def load_feed_frame(feed_frame, feed_btn):
     scrollbar.config(command=entries_frame.yview)
 
     # Create a frame to contain the labels
-    entries_list = Frame(entries_frame, bg="orange", width=590)
+    entries_list = Frame(entries_frame, bg="", width=590)
     entries_frame.create_window((0, 0), window=entries_list, anchor='nw')
 
     for i in range(number_of_parsed_entries):
         label = Label(
             entries_list, 
-            text=f"Label {i+1}", 
+            text=f"{i+1}. {x.entries[i].title}", 
             bg="#d9d9d9", 
             width=90,  
             anchor='w', 
@@ -957,7 +1001,7 @@ def load_feed_frame(feed_frame, feed_btn):
         label.pack(pady=0, fill='x')
         label.bind("<Enter>", on_enter)
         label.bind("<Leave>", on_leave)
-        label.bind("<Double-1>", on_double_click) # for double clicks
+        label.bind("<Double-1>", lambda event, index=i: on_double_click(event, x.entries[index])) # for double clicks
 
     # Function to update scroll region
     def update_scroll_region(event):
@@ -1001,4 +1045,8 @@ def load_feed_frame(feed_frame, feed_btn):
         width=182.0,
         height=46.0
     )
+
+
+
+
 
