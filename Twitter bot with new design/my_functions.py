@@ -6,6 +6,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import feedparser
 import os
+import webbrowser
 
 
 def update_variables(x, parsed_title, number_of_parsed_entries):
@@ -31,8 +32,6 @@ def create_variables():
     except FileNotFoundError:
         with open("variables.dat", "wb") as file:
             pickle.dump(data, file)
-    else:
-        print('variables.dat created successfully!')
 
 
 def load_variables():
@@ -258,7 +257,6 @@ def delete_confirm_window(saved_links_from_file, rss_source):
             # Update the values in the combobox
             saved_links_from_file["values"] = [source["title"] for source in rss_sources]
             saved_links_from_file.set(new_title)
-            print("Updated!")
             window.destroy()
         else:
             popup_message("Error", "No RSS title selected!")
@@ -305,7 +303,6 @@ def update_rss(saved_links_from_file, new_title, new_link, window):
         # Update the values in the combobox
         saved_links_from_file["values"] = [source["title"] for source in rss_sources]
         saved_links_from_file.set(new_title)
-        print("Updated!")
         window.destroy()
     else:
         popup_message("Error", "No RSS title selected!")
@@ -399,9 +396,6 @@ def parse_rss(saved_links_from_file, feed_btn):
                     number_of_parsed_entries = len(x.entries)
                     if(number_of_parsed_entries > 0):
                         update_variables(x=x, parsed_title=selected_title, number_of_parsed_entries=number_of_parsed_entries)
-                        print(f"selected_title = {selected_title} : {number_of_parsed_entries} entries")
-                        print("parse rss : ", number_of_parsed_entries, " data updated successfully!")
-                        print("File created at:", os.path.abspath("variables.dat"))
                         feed_btn.invoke()
                         
                     else:
@@ -660,7 +654,6 @@ def load_queue_frame(queue_frame):
         label = tk.Label(post, text="Post title", bg=post.cget('bg'))
         label.place(x=180+15, y=10)
         # Create Posts's description
-        description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
         if len(description) > 300:
             label = tk.Label(post, text=f"{description[:300]}...", bg=post.cget('bg'), wraplength=700, anchor="w", justify="left")
         else:
@@ -812,6 +805,9 @@ def load_feed_frame(feed_frame, feed_btn):
         width=356,
         height=69
     )
+    scrollbar_entry_title = Scrollbar(feed_frame, orient="vertical", width=13, troughcolor="#9597A8", bd=0, command=entry_title.yview)
+    entry_title.config(yscrollcommand=scrollbar_entry_title.set)
+    scrollbar_entry_title.place(x=1036.0, y=209.0, height=101.0, anchor="nw")
 
     entry_description = tk.Text( #summary input
         feed_frame,
@@ -826,6 +822,9 @@ def load_feed_frame(feed_frame, feed_btn):
         width=356,
         height=69
     )
+    scrollbar_entry_description = Scrollbar(feed_frame, orient="vertical", width=13, troughcolor="#9597A8", bd=0, command=entry_description.yview)
+    entry_description.config(yscrollcommand=scrollbar_entry_description.set)
+    scrollbar_entry_description.place(x=1036.0, y=324.0, height=101.0, anchor="nw")
 
     hashtags_entry = tk.Text( #hashtags input
         feed_frame,
@@ -840,6 +839,9 @@ def load_feed_frame(feed_frame, feed_btn):
         width=356,
         height=51
     )
+    scrollbar_hashtags_entry = Scrollbar(feed_frame, orient="vertical", width=13, troughcolor="#9597A8", bd=0, command=hashtags_entry.yview)
+    hashtags_entry.config(yscrollcommand=scrollbar_hashtags_entry.set)
+    scrollbar_hashtags_entry.place(x=1036.0, y=437.0, height=101.0, anchor="nw")
 
 
     feed_frame.create_text(
@@ -935,7 +937,7 @@ def load_feed_frame(feed_frame, feed_btn):
         event.widget.config(bg="#d9d9d9")
 
     def on_double_click(event, entry):
-
+        entry_link = entry.link
         entry_title.delete(1.0, "end")
         entry_description.delete(1.0, "end")
 
@@ -966,6 +968,43 @@ def load_feed_frame(feed_frame, feed_btn):
             entry_description.insert("1.0", "This entry doesn't have a description or summary to show!")
 
 
+        search_btn = Button(
+        feed_frame,
+        text="Search",
+        bg="#222222",
+        fg="#FFFFFF",
+        bd=0,
+        highlightthickness=0,
+        command=lambda: webbrowser.open(entry.link),
+        relief="flat",
+        cursor="hand2"
+        )
+        search_btn.place(
+            x=657,
+            y=575.0,
+            width=182.0,
+            height=46.0
+        )
+
+        add_to_queue_btn = Button(
+        feed_frame,
+        text="Add to Queue",
+        bg="#222222",
+        fg="#FFFFFF",
+        bd=0,
+        highlightthickness=0,
+        command=lambda: print("add_to_queue_btn clicked"),
+        relief="flat",
+        cursor="hand2"
+        )
+        add_to_queue_btn.place(
+            x=854,
+            y=575.0,
+            width=182.0,
+            height=46.0
+        )
+
+
 
     # Create a canvas
     entries_frame = Canvas(feed_frame, bg="#D7D9E5", height=538, width=590, bd=0, highlightthickness=0, relief="ridge")
@@ -985,6 +1024,7 @@ def load_feed_frame(feed_frame, feed_btn):
     entries_list = Frame(entries_frame, bg="", width=590)
     entries_frame.create_window((0, 0), window=entries_list, anchor='nw')
 
+    # loading the entries in the entries list container
     for i in range(number_of_parsed_entries):
         label = Label(
             entries_list, 
@@ -1009,42 +1049,6 @@ def load_feed_frame(feed_frame, feed_btn):
 
     # Bind the update_scroll_region function to the frame's size change event
     entries_list.bind("<Configure>", update_scroll_region)
-
-    search_btn = Button(
-    feed_frame,
-    text="Search",
-    bg="#222222",
-    fg="#FFFFFF",
-    bd=0,
-    highlightthickness=0,
-    command=lambda: print("search_btn clicked"),
-    relief="flat",
-    cursor="hand2"
-    )
-    search_btn.place(
-        x=657,
-        y=575.0,
-        width=182.0,
-        height=46.0
-    )
-
-    add_to_queue_btn = Button(
-    feed_frame,
-    text="Add to Queue",
-    bg="#222222",
-    fg="#FFFFFF",
-    bd=0,
-    highlightthickness=0,
-    command=lambda: print("add_to_queue_btn clicked"),
-    relief="flat",
-    cursor="hand2"
-    )
-    add_to_queue_btn.place(
-        x=854,
-        y=575.0,
-        width=182.0,
-        height=46.0
-    )
 
 
 
