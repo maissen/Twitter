@@ -7,6 +7,17 @@ from PIL import Image, ImageTk
 import feedparser
 import os
 import webbrowser
+import requests
+from io import BytesIO
+
+
+def get_entry_picture(entry):
+    picture_url = None
+    if 'media_content' in entry:
+        picture_url = entry.media_content[0]['url']
+    elif 'enclosures' in entry and entry.enclosures:
+        picture_url = entry.enclosures[0]['url']
+    return picture_url
 
 
 def update_variables(x, parsed_title, number_of_parsed_entries):
@@ -406,7 +417,6 @@ def parse_rss(saved_links_from_file, feed_btn):
 
 def load_sources_frame(sources_frame, feed_btn):
     destroy_frame_child_elements(sources_frame)
-    variables = load_variables()
 
     # Add elements to the parent sources_frame
     sources_frame.create_text(
@@ -919,7 +929,6 @@ def load_feed_frame(feed_frame, feed_btn):
 
     
 
-    
     feed_frame.create_rectangle( # entry img
     657,
     23.0,
@@ -966,6 +975,33 @@ def load_feed_frame(feed_frame, feed_btn):
         else:
             entry_description.delete('1.0', 'end')
             entry_description.insert("1.0", "This entry doesn't have a description or summary to show!")
+
+
+        entry_img_url = get_entry_picture(entry)
+        if entry_img_url is not None:
+            print('This entry has a picture!')
+            # Create the canvas
+            entry_img_container = Canvas(feed_frame, bg="#000", width=379, height=172)  # Set desired width and height
+            entry_img_container.place(x=657, y=23)  # Set desired position
+            # Load the image from the URL
+            response = requests.get(entry_img_url)
+            image_data = response.content
+            image = Image.open(BytesIO(image_data))
+
+            # Convert the Image object to a Tkinter PhotoImage
+            photo = ImageTk.PhotoImage(image)
+
+            # Create an image container on the canvas
+            image_container = entry_img_container.create_image(
+                0, 0,
+                image=photo,
+                anchor="nw"  # Set anchor to the top-left corner
+            )
+
+            # Make sure to keep a reference to the photo object to prevent it from being garbage collected
+            entry_img_container.photo = photo
+        else:
+            print('This entry doesn\'t have a picture!')
 
 
         search_btn = Button(
